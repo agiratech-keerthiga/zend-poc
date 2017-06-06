@@ -1,0 +1,30 @@
+<?php
+if(isset($this->errorMessage))
+{
+echo $this->errorMessage;
+}
+?>
+
+<center>
+<div class ="user_form">
+<h1>Sign in</h1>
+<?php
+  if ($this->hasIdentity != true) {
+	echo $this->form;
+  }
+ if ($this->hasIdentity != true) {
+?>
+</div>
+Don't have an account? <a href="<?php echo $this->url(
+        array(
+            'controller' => 'index',
+            'action'     => 'signup'
+        ))?>">Create one.</a><br>
+<a href="<?php echo $this->url(
+        array(
+            'controller' => 'index',
+            'action'     => 'forgottenpassword'
+        ))?>">Forgot Password</a>
+
+<?php } ?>
+</center>

@@ -1,0 +1,18 @@
+<?php
+     if ($this->hasIdentity == true) {
+         echo 'Logged in as ' . $this->email;
+     } else {
+         echo 'Not logged in';
+     }
+ ?>
+<a href='<?php $i=$this->baseUrl()."/index/logout"; echo $i; ?>'>Logout</a></font>
+
+
+<center><br><br><br><font color=blue>Welcome <?=$this->email?>,<br>
+ This is your home page<br><br>
+
+
+
+
+
+</center>
