@@ -6,11 +6,15 @@ class AdminController extends Zend_Controller_Action
     public function init()
     {
         /* Initialize action controller here */
+        $this->identity = Zend_Auth::getInstance()->getIdentity();
+        if(!$this->identity)
+            $this->_redirect('/index');
+       
     }
 
     public function indexAction()
     {
-        // action body
+        
     }
 
     public function addAction()
