@@ -6,7 +6,12 @@ class IndexController extends Zend_Controller_Action
     public function init()
     {
         /* Initialize action controller here */
+         //Save request
+         $this->_request = $this->getRequest();
+          //Save httpHost (base URL)
+        $this->_httpHost = $this->_request->getHttpHost();
         $this->_flashMessenger = $this->_helper->getHelper('FlashMessenger'); 
+        $this->identity = Zend_Auth::getInstance()->getIdentity();
     }
 
     public function indexAction()
@@ -14,7 +19,7 @@ class IndexController extends Zend_Controller_Action
 		$user = new Application_Model_UserMapper();
 		$form = new Application_Form_LoginForm();
 		$form->setAttrib('id','login_form');
-
+		
 		$this->view->form = $form;
 
 		if($this->getRequest()->isPost()){
@@ -24,12 +29,9 @@ class IndexController extends Zend_Controller_Action
 				
             	$email = $form->getValue('email');
             	$password = $form->getValue('password');
-            	$salt = 'rR1qnRIHzhs6vYEs';
-            	// echo SHA1($password.$salt);
-            	// die;
 
             	$authAdapter->setIdentity($email)
-                        ->setCredential($password);
+                            ->setCredential($password);
 
                 $auth = Zend_Auth::getInstance();
 
@@ -49,7 +51,6 @@ class IndexController extends Zend_Controller_Action
                     //converting object into an array
                     $identity = json_decode(json_encode($identity), true);
 
-                    
                     //remember me for 7 days
                     $authstorage = $auth->getStorage();
                     Zend_Session::rememberMe(7*86400); //7 days
@@ -60,15 +61,16 @@ class IndexController extends Zend_Controller_Action
 					$data = $storage->read();
 					
                     $authstorage->write($identity);
-                    if (Zend_Auth::getInstance()->hasIdentity()) 
-                    	$this->view->hasIdentity = true;
-
-         
+                    if ($auth->hasIdentity()) {
+						$user = $auth->getIdentity();
+					}
+					
                 	$this->_flashMessenger->addMessage(array('message' => 'Successful Login', 'status' => 'succMsg'));
                 	if($identity['role'] == 'admin'){
                     	$this->_redirect('/admin/dashboard');
                 	}
                 	else{
+                		$this->view->firstname = $user['firstname'];
                     	$this->_redirect('/index/home');
                 	}
                 }
@@ -80,20 +82,26 @@ class IndexController extends Zend_Controller_Action
 
 			}
 		}
+
+		if($this->identity)
+            $this->_redirect('/index/home');
 	}
 
     public function homeAction()
 	{
 		$storage = new Zend_Auth_Storage_Session();
-		if (Zend_Auth::getInstance()->hasIdentity()) 
-            $this->view->hasIdentity = true;
+		$auth = Zend_Auth::getInstance();;
+		
+        if ($auth->hasIdentity()) {
+			$user = $auth->getIdentity();
+		}
                     	
 		$data = $storage->read();
 		if(!$data)
 		{
         return $this->_helper->redirector('index');
 		}
-		$this->view->email = $data['email'];
+		$this->view->user = $user;
 	}
 
      public function signupAction()
@@ -117,10 +125,7 @@ class IndexController extends Zend_Controller_Action
     public function logoutAction()
 	{
 		$storage = new Zend_Auth_Storage_Session();
-		$storage->clear();
-		
-		// Zend_Auth::getInstance()->clearIdentity());
-             
+		$storage->clear();     
         return $this->_helper->redirector('index');
 	}
 
@@ -136,11 +141,13 @@ class IndexController extends Zend_Controller_Action
 				$data = $form->getValues();
 				$usr_email = $data['email'];
 				// $mapper  = new Application_Model_UserMapper();
-    //             $user = $mapper->getUserByEmail($usr_email);
+                // $user = $mapper->getUserByEmail($usr_email);
 				$user = new Application_Model_DbTable_User();
+		        // $uri = Zend_Controller_Front::getInstance()->getRequest()->getRequestUri();
+		        // $baseUrl = sprintf('%s://%s', $uri->getScheme(), $uri->getHost());
                
 				$code = rand(100,999);
-				$resetPassLink = 'http://local.zend.com/index/resetpassword?code='.$code;
+				$resetPassLink =  $this->_httpHost.'/index/resetpassword?code='.$code;
 				$email = $usr_email;
 				 $mailContent = 'To reset your password, visit the following link: <a href="'.$resetPassLink.'">'.'reset link'.'</a>';
 				

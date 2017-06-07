@@ -16,17 +16,34 @@
     </div>
     <div id="header-navigation" style="float: right">
     </div>
+
+    <?php
+    $identity = Zend_Auth::getInstance()->getIdentity();
+    if($identity){ ?>
+      <a style="float: right;margin:20px;" href="<?php echo $this->url(
+      array(
+          'controller' => 'index',
+          'action'     => 'logout'
+      ))?>">Logout</a>
+    <?php
+    } 
+    else { ?>
+     <a style="float: right;margin:10px;display:inline;" href="<?php echo $this->url(
+      array(
+          'controller' => 'index',
+          'action'     => 'index'
+      ))?>">Login</a>
+
+  <?php  
+  }
+?>
+    
 </div>
 <div id="container">
   <?php echo $this->layout()->content ?>
 </div>
 
 <div id="footer">
-<a href="<?php echo $this->url(
-        array(
-            'controller' => 'index',
-            'action'     => 'logout'
-        ))?>">Logout</a>
     
 </div>
 

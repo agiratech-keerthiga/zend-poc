@@ -9,7 +9,6 @@ class AdminController extends Zend_Controller_Action
         $this->identity = Zend_Auth::getInstance()->getIdentity();
         if(!$this->identity)
             $this->_redirect('/index');
-       
     }
 
     public function indexAction()
