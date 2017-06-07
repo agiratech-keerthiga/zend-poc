@@ -25,6 +25,7 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         if (!Zend_Registry::isRegistered('session')) {
             $session = new Zend_Session_Namespace('userIdentity');
             Zend_Registry::set('session', $session);
+            Zend_Registry::set('login', 'true');
         }
     }
 
@@ -46,13 +47,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         }
     }
 
-    // protected function _initUser() // @codingStandardsIgnoreLine
-    // {
-    //     $auth = Zend_Auth::getInstance();
-    //     if ($auth->hasIdentity()) {
-    //         Zend_Registry::set('id', $auth->getIdentity()->user_id);
-    //     }
-    // }
+    protected function _initUser() // @codingStandardsIgnoreLine
+    {
+        $auth = Zend_Auth::getInstance();
+        if ($auth->hasIdentity()) {
+            Zend_Registry::set('identity', $auth->getIdentity());
+        }
+    }
 
 }
 
