@@ -20,6 +20,24 @@ body {
     min-height: 100%;
 }
 
+#user_list {
+  padding-top: 50px;
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 80%;
+  margin: 0 auto;
+}
+
+#user_list td, #user_list th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+#user_list tr:nth-child(even) {
+    background-color: #dddddd;
+}
+
 #container {
   height: 100%;
 }
