@@ -18,8 +18,8 @@
     </div>
 
     <?php
-    $identity = Zend_Auth::getInstance()->getIdentity();
-    if($identity){ ?>
+    //identity variable has defined in controller
+    if($this->identity){ ?>
       <a style="float: right;margin:20px;" href="<?php echo $this->url(
       array(
           'controller' => 'index',

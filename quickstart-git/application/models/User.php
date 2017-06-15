@@ -4,6 +4,7 @@ class Application_Model_User
 {
 
     protected $_id;
+    protected $_role;
     protected $_firstname;
     protected $_lastname;
 	protected $_password;
@@ -33,7 +34,7 @@ class Application_Model_User
     {
         $method = 'get' . $name;
         if (('mapper' == $name) || !method_exists($this, $method)) {
-            throw new Exception('Invalid guestbook property');
+            throw new Exception('Invalid User');
         }
         return $this->$method();
     }
@@ -78,16 +79,17 @@ class Application_Model_User
         return $this;
     }
 
-    public function getFirstname()
+    public function getRole()
     {
-        return $this->_firstname;
+        return $this->_role;
     }
 
-    public function setLastname($text)
+    public function setRole($text)
     {
-        $this->_lastname = (string) $text;
+        $this->_role = (string) $text;
         return $this;
     }
+
 
     public function getLastname()
     {
@@ -97,6 +99,17 @@ class Application_Model_User
     public function setId($id)
     {
         $this->_id = (int) $id;
+        return $this;
+    }
+
+    public function getFirstname()
+    {
+        return $this->_firstname;
+    }
+
+    public function setLastname($text)
+    {
+        $this->_lastname = (string) $text;
         return $this;
     }
 

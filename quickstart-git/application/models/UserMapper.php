@@ -27,14 +27,16 @@ class Application_Model_UserMapper
 
     public function save(Application_Model_User $user)
     {
-        $salt = $user->generateSalt();
+        $role = 'user';
         $password = $user->getPassword();
+        $salt = $user->generateSalt();
         $data = array(
+            'role'             => $role,
         	'firstname'        => $user->getFirstname(),
         	'lastname'         => $user->getLastname(),
             'email'   	       => $user->getEmail(),
             'password'         => SHA1($password.$salt),
-            'salt'              => $salt
+            'salt'             => $salt
             );
          // print_r(SHA1($pwd.'Ax3xRm5DtOQlGrug'))
 
@@ -97,7 +99,8 @@ class Application_Model_UserMapper
             return;
         }
         $row = $result->current();
-        $user->setId($row->id)
+        $user ->setId($row->id)
+              ->setRole($row->role)
         	  ->setFirstname($row->firstname)
         	  ->setLastname($row->lastname)
               ->setEmail($row->email)
@@ -113,6 +116,7 @@ class Application_Model_UserMapper
         foreach ($resultSet as $row) {
             $entry = new Application_Model_User();
             $entry->setId($row->id)
+                  ->setRole($row->role)
             	  ->setFirstname($row->firstname)
             	  ->setLastname($row->lastname)
                   ->setEmail($row->email)

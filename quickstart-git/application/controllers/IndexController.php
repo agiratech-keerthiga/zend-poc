@@ -7,11 +7,11 @@ class IndexController extends Zend_Controller_Action
     {
         /* Initialize action controller here */
          //Save request
-         $this->_request = $this->getRequest();
+        $this->_request = $this->getRequest();
           //Save httpHost (base URL)
         $this->_httpHost = $this->_request->getHttpHost();
         $this->_flashMessenger = $this->_helper->getHelper('FlashMessenger'); 
-        $this->identity = Zend_Auth::getInstance()->getIdentity();
+        $this->view->identity = Zend_Auth::getInstance()->getIdentity();
     }
 
     public function indexAction()
@@ -51,6 +51,7 @@ class IndexController extends Zend_Controller_Action
                     //converting object into an array
                     $identity = json_decode(json_encode($identity), true);
 
+                    
                     //remember me for 7 days
                     $authstorage = $auth->getStorage();
                     Zend_Session::rememberMe(7*86400); //7 days
@@ -65,6 +66,7 @@ class IndexController extends Zend_Controller_Action
 						$user = $auth->getIdentity();
 					}
 					
+       
                 	$this->_flashMessenger->addMessage(array('message' => 'Successful Login', 'status' => 'succMsg'));
                 	if($identity['role'] == 'admin'){
                     	$this->_redirect('/admin/dashboard');
@@ -72,7 +74,7 @@ class IndexController extends Zend_Controller_Action
                 	else{
                 		$this->view->firstname = $user['firstname'];
                     	$this->_redirect('/index/home');
-                	}
+                	}	
                 }
 				else {
 					
@@ -83,8 +85,8 @@ class IndexController extends Zend_Controller_Action
 			}
 		}
 
-		if($this->identity)
-            $this->_redirect('/index/home');
+		// if($this->view->identity)
+  //           $this->_redirect('/index/home');
 	}
 
     public function homeAction()
@@ -112,7 +114,36 @@ class IndexController extends Zend_Controller_Action
 
         if ($this->getRequest()->isPost()) {
             if ($form->isValid($request->getPost())) {
-                $data = new Application_Model_User($form->getValues());     
+                $data = new Application_Model_User($form->getValues());  
+				$registerverification =  $this->_httpHost.'/index/registerenable?enable=true';
+				 $mailContent = 'To register your account, please click thise link: <a href="'.$registerverification.'">'.'verification link'.'</a>';
+
+				//sending email via smtp
+				$mail = new Zend_Mail();
+				$mail->addTo($email);
+				$mail->setSubject("Account verification");
+				$mail->setBodyHtml($mailContent);
+				$mail->setFrom('keerthiga@agiratech.com', 'Admin'); 
+				$sent = true;
+				try {
+				    $mail->send();
+				} catch (Exception $e){
+				    $sent = false;
+				}
+				if($sent){
+					$data = new Application_Model_User($form->getValues()); 
+					$mapper  = new Application_Model_UserMapper();
+					$mapper->setEnable(true);
+					// $usersTable = new Application_Model_DbTable_User();
+					// $getuser = $usersTable->getUserByEmail('keerthiga@agiratech.com');
+					// print_r($getuser);
+					echo "Kindly check your inbox to reset your password";
+					$this->_redirect('/index');
+
+				}
+				else{
+					$this->view->errorMessage = "Please verify your account while registering..!";
+				}  
                 $mapper  = new Application_Model_UserMapper();
                 $mapper->save($data);
                 return $this->_helper->redirector('index');
@@ -185,6 +216,10 @@ class IndexController extends Zend_Controller_Action
 			}					
 		}		
 		$this->view->form = $form;		
+	}
+
+	public function registerverificationAction(){
+
 	}
 
 	public function resetpasswordAction()

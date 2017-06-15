@@ -47,12 +47,22 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         }
     }
 
-    protected function _initUser() // @codingStandardsIgnoreLine
+    // protected function _initUser() // @codingStandardsIgnoreLine
+    // {
+    //     $auth = Zend_Auth::getInstance();
+    //     if ($auth->hasIdentity()) {
+    //         Zend_Registry::set('identity', $auth->getIdentity());
+    //     }
+    // }
+
+    protected function _initPlugins()
     {
-        $auth = Zend_Auth::getInstance();
-        if ($auth->hasIdentity()) {
-            Zend_Registry::set('identity', $auth->getIdentity());
-        }
+        $autoloader = Zend_Loader_Autoloader::getInstance();
+        $autoloader->registerNamespace('My_');
+ 
+        $objFront = Zend_Controller_Front::getInstance();
+        $objFront->registerPlugin(new My_Controller_Plugin_ACL(), 1);
+        return $objFront;
     }
 
 }
